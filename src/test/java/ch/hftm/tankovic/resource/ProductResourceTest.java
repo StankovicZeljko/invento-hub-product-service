@@ -3,6 +3,7 @@ package ch.hftm.tankovic.resource;
 import ch.hftm.stankovic.module.Product;
 import ch.hftm.stankovic.repository.ProductRepository;
 import ch.hftm.stankovic.resource.ProductResource;
+import ch.hftm.stankovic.service.ProductMessageService;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,8 @@ public class ProductResourceTest {
 
     @Mock
     private ProductRepository productRepository;
+    @Mock
+    private ProductMessageService productMessageService;
 
     @BeforeEach
     public void init() {
@@ -62,6 +65,7 @@ public class ProductResourceTest {
 
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
         verify(productRepository, times(1)).persist(product);
+        verify(productMessageService, times(1)).sendProductCreate(product);
     }
 
     @Test
@@ -74,6 +78,7 @@ public class ProductResourceTest {
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         assertEquals(product, response.getEntity());
+        verify(productMessageService, times(1)).sendProductUpdate(product);
     }
 
     @Test
@@ -86,5 +91,6 @@ public class ProductResourceTest {
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         verify(productRepository, times(1)).delete(product);
+        verify(productMessageService, times(1)).sendProductDelete(product);
     }
 }

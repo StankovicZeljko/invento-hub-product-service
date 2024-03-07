@@ -2,6 +2,7 @@ package ch.hftm.stankovic.resource;
 
 import ch.hftm.stankovic.module.Product;
 import ch.hftm.stankovic.repository.ProductRepository;
+import ch.hftm.stankovic.service.ProductMessageService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -16,6 +17,8 @@ import java.util.List;
 public class ProductResource {
     @Inject
     ProductRepository repository;
+    @Inject
+    ProductMessageService productMessageService;
     @GET
     public List<Product> getAllProducts(){
         return repository.listAll();
@@ -43,6 +46,7 @@ public class ProductResource {
         }
 
         repository.persist(product);
+        productMessageService.sendProductCreate(product);
         return Response.status(Response.Status.CREATED).entity(product).build();
     }
 
@@ -63,6 +67,7 @@ public class ProductResource {
         if (existingProduct != null) {
             existingProduct.setName(product.getName());
             existingProduct.setPrice(product.getPrice());
+            productMessageService.sendProductUpdate(product);
             return Response.ok(existingProduct).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -76,6 +81,7 @@ public class ProductResource {
         Product product = repository.findById(id);
         if (product != null) {
             repository.delete(product);
+            productMessageService.sendProductDelete(product);
             return Response.ok().build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
