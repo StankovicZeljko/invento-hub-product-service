@@ -23,7 +23,7 @@ jobs:
       - name: Package
         run: ./mvnw package -DskipTests
       - name: Build Docker image
-        run: docker build -f src/main/docker/Dockerfile.jvm -t codingwulf/invento-hub-product-service .
+        run: docker build --build-arg DB_USER=${{ secrets.DB_USER }} --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }} --build-arg DB_CONNECTION_STRING=${{ secrets.DB_CONNECTION_STRING }} --build-arg KAFKA_BOOTSTRAP_SERVERS=${{ secrets.KAFKA_BOOTSTRAP_SERVERS }}  -f src/main/docker/Dockerfile.jvm -t codingwulf/invento-hub-product-service .
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
